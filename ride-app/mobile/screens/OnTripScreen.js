@@ -8,7 +8,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import SafeMapView, { Marker, Polyline } from "../components/SafeMapView";
 import { Ionicons, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "../theme";
 import { api } from "../api/client";
@@ -61,7 +61,7 @@ export default function OnTripScreen({ route, navigation }) {
 
       {/* Map */}
       <View style={styles.mapWrap}>
-        <MapView style={{ flex: 1 }} initialRegion={region}>
+        <SafeMapView style={{ flex: 1 }} initialRegion={region}>
           <Marker
             coordinate={{ latitude: ride.pickup_lat, longitude: ride.pickup_lon }}
             pinColor="green"
@@ -84,7 +84,7 @@ export default function OnTripScreen({ route, navigation }) {
               strokeWidth={5}
             />
           )}
-        </MapView>
+        </SafeMapView>
 
         <View style={styles.arrivingBadge}>
           <Text style={styles.arrivingText}>Arriving in</Text>

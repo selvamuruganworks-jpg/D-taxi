@@ -12,7 +12,7 @@ import {
 
 
 } from "react-native";
-import { MapView, Marker, Polyline } from "react-native-maps";
+import SafeMapView, { Marker, Polyline } from "../components/SafeMapView";
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
 import { COLORS } from "../theme";
 import { api } from "../api/client";
@@ -65,12 +65,33 @@ export default function ChooseRideScreen({ route, navigation }) {
 
   const [loading, setLoading] = useState(false);
 
-  const region = {
-    latitude: (pickupCoord.lat + dropCoord.lat) / 2,
-    longitude: (pickupCoord.lon + dropCoord.lon) / 2,
-    latitudeDelta: Math.abs(pickupCoord.lat - dropCoord.lat) * 2 + 0.05,
-    longitudeDelta: Math.abs(pickupCoord.lon - dropCoord.lon) * 2 + 0.05,
-  };
+  const region = (pickupCoord && dropCoord)
+    ? {
+        latitude: (pickupCoord.lat + dropCoord.lat) / 2,
+        longitude: (pickupCoord.lon + dropCoord.lon) / 2,
+        latitudeDelta: Math.abs(pickupCoord.lat - dropCoord.lat) * 2 + 0.05,
+        longitudeDelta: Math.abs(pickupCoord.lon - dropCoord.lon) * 2 + 0.05,
+      }
+    : (pickupCoord
+    ? {
+        latitude: pickupCoord.lat,
+        longitude: pickupCoord.lon,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      }
+    : (dropCoord
+    ? {
+        latitude: dropCoord.lat,
+        longitude: dropCoord.lon,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      }
+    : {
+        latitude: 13.0827, // Default to Chennai
+        longitude: 80.2707,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }));
 
   const polylineCoords = (routeGeo || []).map(([lat, lon]) => ({
     latitude: lat,
@@ -117,6 +138,10 @@ export default function ChooseRideScreen({ route, navigation }) {
 
  const handleConfirm = async () => {
     if (!selected) return;
+    if (!pickupCoord || !dropCoord) {
+      Alert.alert("Missing coordinates", "Please pick locations on the map first");
+      return;
+    }
     setLoading(true);
     try {
         const ride = await api.bookRide({
@@ -128,7 +153,7 @@ export default function ChooseRideScreen({ route, navigation }) {
             drop_lon: dropCoord.lon,
             category_id: selected.id,
         });
-        navigation.navigate("OnTrip", { ride });
+        navigation.navigate("OnTripScreen", { ride });
     } catch (e) {
         Alert.alert("Error", e.message || "Unable" + " able to confirm ride");
     } finally {
@@ -162,7 +187,7 @@ export default function ChooseRideScreen({ route, navigation }) {
 
       <View style={styles.mapWrap}>
         {/* Interactive Map showing route */}
-        <MapView
+        <SafeMapView
           style={{ flex: 1, borderRadius: 14 }}
           initialRegion={region}
           onPress={(e) => {
@@ -187,7 +212,7 @@ export default function ChooseRideScreen({ route, navigation }) {
               strokeWidth={4}
             />
           )}
-        </MapView>
+        </SafeMapView>
       </View>
 
 

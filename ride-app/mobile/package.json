@@ -27,5 +27,8 @@
     "@babel/core": "^7.20.0",
     "babel-preset-expo": "~54.0.10"
   },
+  "browser": {
+    "react-native-maps": "./mocks/react-native-maps.js"
+  },
   "private": true
 }

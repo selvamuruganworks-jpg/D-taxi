@@ -10,10 +10,22 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import SafeMapView, { Marker } from "../components/SafeMapView";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { COLORS } from "../theme";
+import { COLORS, API_BASE_URL } from "../theme";
 import { api } from "../api/client";
+
+// Safely import AsyncStorage for persistence
+let AsyncStorage;
+try {
+  AsyncStorage = require('@react-native-async-storage/async-storage').default;
+} catch (e) {
+  try {
+    AsyncStorage = require('react-native').AsyncStorage;
+  } catch (err) {
+    AsyncStorage = null;
+  }
+}
 
 const SUGGESTIONS = [
   { icon: "home", label: "Home", sub: "123 Green Street, New York" },
@@ -22,13 +34,28 @@ const SUGGESTIONS = [
   { icon: "city", label: "Downtown", sub: "789 City Center, New York" },
 ];
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
+  const userName = route.params?.userName || "Kamalakannan";
   const [from, setFrom] = useState("Current Location");
   const [to, setTo] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectMode, setSelectMode] = useState('pickup'); // 'pickup' or 'drop'
   const [pickupCoord, setPickupCoord] = useState(null);
   const [dropCoord, setDropCoord] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      const token = AsyncStorage ? await AsyncStorage.getItem("userToken") : "";
+      await fetch(`${API_BASE_URL}/logout/`, {
+        method: "POST",
+        headers: { "Authorization": `Token ${token}` }
+      });
+    } catch(e) {}
+    if (AsyncStorage) {
+      await AsyncStorage.clear();
+    }
+    navigation.replace("Login");
+  };
 
 
   const handleFindRide = async (toOverride) => {
@@ -75,10 +102,12 @@ export default function HomeScreen({ navigation }) {
       {/* Top bar */}
       <View style={styles.topBar}>
         <Ionicons name="menu" size={26} color="#222" />
-        <Ionicons name="notifications-outline" size={24} color="#222" />
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={24} color="#e53935" />
+        </TouchableOpacity>
       </View>
 
-      <Text style={styles.greeting}>Hello Mr.Kamalakannan</Text>
+      <Text style={styles.greeting}>Hello Mr.{userName}</Text>
       <Text style={styles.question}>Where do you want to go?</Text>
 
       {/* From / To card */}
@@ -166,7 +195,7 @@ export default function HomeScreen({ navigation }) {
 
       {/* Interactive Map */}
       <View style={styles.mapPreview}>
-        <MapView
+        <SafeMapView
           style={{ flex: 1, borderRadius: 14 }}
           initialRegion={{
             latitude: 13.0827,
@@ -191,7 +220,7 @@ export default function HomeScreen({ navigation }) {
           {dropCoord && (
             <Marker coordinate={{ latitude: dropCoord.lat, longitude: dropCoord.lon }} pinColor="red" />
           )}
-        </MapView>
+        </SafeMapView>
       </View>
 
       {/* Find ride button */}

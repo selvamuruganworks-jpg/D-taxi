@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-change-this-key"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
+AUTH_USER_MODEL = "rides.User"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -15,6 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
     "corsheaders",
     "rides",
 ]

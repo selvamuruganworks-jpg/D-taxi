@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,8 +6,49 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  TextInput,
+  Alert,
+  Animated,
+  Easing,
 } from "react-native";
 import { COLORS } from "../theme";
+
+// Safely import AsyncStorage for persistence
+let AsyncStorage;
+try {
+  AsyncStorage = require('@react-native-async-storage/async-storage').default;
+} catch (e) {
+  try {
+    AsyncStorage = require('react-native').AsyncStorage;
+  } catch (err) {
+    AsyncStorage = null;
+  }
+}
+
+const memoryStorage = {};
+const storage = {
+  getItem: async (key) => {
+    if (AsyncStorage) {
+      try {
+        return await AsyncStorage.getItem(key);
+      } catch (e) {
+        console.warn("AsyncStorage error:", e);
+      }
+    }
+    return memoryStorage[key] || null;
+  },
+  setItem: async (key, value) => {
+    if (AsyncStorage) {
+      try {
+        await AsyncStorage.setItem(key, value);
+        return;
+      } catch (e) {
+        console.warn("AsyncStorage error:", e);
+      }
+    }
+    memoryStorage[key] = value;
+  }
+};
 
 const Skyline = () => {
   return (
@@ -43,11 +84,85 @@ const Skyline = () => {
       <View style={[styles.bush, { height: 22, width: 22, left: '33%', backgroundColor: '#add5ad' }]} />
       <View style={[styles.bush, { height: 30, width: 30, left: '65%', backgroundColor: '#add5ad' }]} />
       <View style={[styles.bush, { height: 25, width: 25, left: '76%', backgroundColor: '#add5ad' }]} />
+
+      {/* Ground stripe under the car */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 10, backgroundColor: '#add5ad' }} />
     </View>
   );
 };
 
 export default function WelcomeScreen({ navigation }) {
+  const [savedName, setSavedName] = useState("");
+  const [savedRole, setSavedRole] = useState("");
+
+  const spinValue = useRef(new Animated.Value(0)).current;
+  const carTranslateY = useRef(new Animated.Value(0)).current;
+
+  // Spin logo animation
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 12000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [spinValue]);
+
+  // Car engine vibration animation
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(carTranslateY, {
+          toValue: -2.5,
+          duration: 150,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+        Animated.timing(carTranslateY, {
+          toValue: 0,
+          duration: 150,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [carTranslateY]);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  // Load saved credentials on mount
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = await storage.getItem("userToken");
+      const role = await storage.getItem("userRole");
+      const name = await storage.getItem("userName");
+      if (token && role) {
+        setSavedName(name || "User");
+        setSavedRole(role);
+      }
+    };
+    checkLogin();
+  }, []);
+
+  const handleGetStarted = () => {
+    if (savedRole) {
+      if (savedRole === "customer") {
+        navigation.replace("Home", { userName: savedName });
+      } else if (savedRole === "driver") {
+        navigation.replace("DriverDashboard");
+      } else if (savedRole === "admin") {
+        navigation.replace("AdminDashboard");
+      }
+    } else {
+      navigation.navigate("Login");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Decorative Background Glows */}
@@ -57,33 +172,24 @@ export default function WelcomeScreen({ navigation }) {
       <View style={styles.center}>
         {/* Logo with clean outer ring and shadow */}
         <View style={styles.logoContainer}>
-          <Image
-            source={require("../assets/logo.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <Image
+              source={require("../assets/logo.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
         </View>
 
         {/* Titles */}
-        <Text style={styles.title}>Dhuruvan</Text>
-        <Text style={styles.subtitle}>Safe ride with{"\n"}Dhuruvan Taxi</Text>
-
-        {/* Skyline & Car Area */}
-        <View style={styles.skylineWrapper}>
-          <Skyline />
-          <Image
-            source={require("../assets/car.png")}
-            style={styles.car}
-            resizeMode="contain"
-          />
-          <View style={styles.carShadow} />
-        </View>
+        <Text style={styles.title}>DHURUVAN</Text>
+        <Text style={styles.subtitle}>Safe ride with Dhuruvan Taxi</Text>
       </View>
 
       {/* Action Button */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Home")}
+        onPress={handleGetStarted}
       >
         <Text style={styles.buttonText}>Get Started</Text>
         <View style={styles.arrowCircle}>
@@ -99,6 +205,19 @@ export default function WelcomeScreen({ navigation }) {
         <Text style={styles.separator}>•</Text>
         <Text style={styles.feature}>Comfortable</Text>
       </View>
+
+      {/* Skyline & Car Area at the very bottom */}
+      <View style={styles.skylineWrapper}>
+        <Skyline />
+        <Animated.View style={{ transform: [{ translateY: carTranslateY }] }}>
+          <Image
+            source={require("../assets/car.png")}
+            style={styles.car}
+            resizeMode="contain"
+          />
+        </Animated.View>
+        <View style={styles.carShadow} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -108,7 +227,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f4faf4",
     justifyContent: "space-between",
-    paddingBottom: 30,
+    paddingBottom: 0,
     position: "relative",
   },
   glow: {
@@ -122,48 +241,53 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   logoContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 4,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    borderWidth: 5,
     borderColor: "#e8f5e9",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#ffffff",
     shadowColor: "#2e7d32",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
     marginBottom: 20,
     overflow: "hidden",
   },
   logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
   },
   title: {
     color: "#1b5e20",
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: 0.5,
+    fontSize: 38,
+    fontWeight: "900",
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    textShadowColor: "rgba(27, 94, 32, 0.15)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     color: "#2e7d32",
     textAlign: "center",
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "500",
-    lineHeight: 22,
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
   },
   skylineWrapper: {
     width: "100%",
-    height: 240,
+    height: 190,
     alignItems: "center",
     justifyContent: "flex-end",
     position: "relative",
-    marginTop: 20,
+    marginTop: 15,
   },
   skylineContainer: {
     position: "absolute",
@@ -260,5 +384,88 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     fontSize: 14,
     fontWeight: "600",
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
+    justifyContent: "flex-end",
+    zIndex: 10,
+  },
+  loginCard: {
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  loginTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#1b5e20",
+    textAlign: "center",
+  },
+  loginSubtitle: {
+    fontSize: 14,
+    color: "#666666",
+    textAlign: "center",
+    marginTop: 6,
+    marginBottom: 24,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#2e7d32",
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: "#f4faf4",
+    borderWidth: 1.5,
+    borderColor: "#e0efe0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: "#222222",
+  },
+  errorText: {
+    color: "#d32f2f",
+    fontSize: 13,
+    fontWeight: "500",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  loginBtn: {
+    backgroundColor: "#2e7d32",
+    borderRadius: 30,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  loginBtnText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  cancelBtn: {
+    alignItems: "center",
+    marginTop: 16,
+  },
+  cancelBtnText: {
+    color: "#666666",
+    fontSize: 14,
+    fontWeight: "500",
   },
 });
