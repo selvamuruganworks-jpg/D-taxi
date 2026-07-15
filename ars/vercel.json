@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "routes": [
+    { "src": "/api/backup", "dest": "api/backup.js" },
+    { "src": "/login", "dest": "/login.html" },
+    { "src": "/dashboard", "dest": "/dashboard.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/admissions", "dest": "/admissions.html" },
+    { "src": "/gallery", "dest": "/gallery.html" },
+    { "src": "/contact", "dest": "/contact.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}

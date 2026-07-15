@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Arvind School | Dashboard Portal</title>
+  <!-- Stylesheets -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <link href="assets/css/portal.css" rel="stylesheet">
+</head>
+<body class="portal-body">
+
+  <div id="app-loader" class="loader-overlay" style="visibility: hidden; opacity: 0;">
+    <div class="loader-spinner"></div>
+  </div>
+
+  <div class="portal-wrapper">
+    <!-- SIDEBAR SHELL -->
+    <aside class="portal-sidebar">
+      <div class="sidebar-header">
+        <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=80&h=80&fit=crop" alt="Logo" id="portal-logo">
+        <h5 id="portal-school-name">Sri Arvind School</h5>
+      </div>
+      
+      <!-- Dynamic Sidebar Menus -->
+      <ul class="sidebar-menu" id="portal-sidebar-menu">
+        <!-- Will be dynamically populated with admin, teacher, or student menus -->
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <img src="" alt="User Avatar" id="sidebar-user-avatar">
+          <div class="user-info">
+            <span class="user-name" id="sidebar-user-name">User Name</span>
+            <span class="user-role" id="sidebar-user-role">Role</span>
+          </div>
+        </div>
+        <button class="btn btn-outline-danger w-100 btn-sm mt-3 rounded-pill" onclick="window.Auth.logout()">
+          <i class="fas fa-sign-out-alt me-1"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN INTERFACE SHELL -->
+    <main class="portal-main">
+      <header class="portal-header">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn-toggle-sidebar" aria-label="Toggle Navigation Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h4 class="mb-0 font-title" id="portal-view-title">Dashboard Overview</h4>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill font-title" id="database-mode-indicator">
+            <i class="fas fa-database me-1"></i> Demo Mode
+          </span>
+          <span class="text-muted small" id="current-system-time">14:52</span>
+        </div>
+      </header>
+
+      <!-- PORTAL PANE LAYOUTS -->
+      <div class="portal-content">
+        
+        <!-- =====================================
+             ADMIN VIEWS
+             ===================================== -->
+        
+        <!-- Admin Dashboard Panel -->
+        <section class="portal-view" id="view-admin-dashboard">
+          <div class="row g-4 mb-4">
+            <div class="col-md-3 col-sm-6">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Total Teachers</h6><h3 id="admin-stat-teachers">0</h3></div>
+                <div class="widget-icon blue"><i class="fas fa-chalkboard-teacher"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Total Students</h6><h3 id="admin-stat-students">0</h3></div>
+                <div class="widget-icon green"><i class="fas fa-user-graduate"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Classes</h6><h3 id="admin-stat-classes">8</h3></div>
+                <div class="widget-icon orange"><i class="fas fa-school"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Daily Attendance</h6><h3 id="admin-stat-attendance">0%</h3></div>
+                <div class="widget-icon purple"><i class="fas fa-calendar-check"></i></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+              <div class="card border-0 rounded-4 p-4 shadow-sm h-100 bg-white">
+                <h5 class="font-title mb-3">Attendance & Enrolment Statistics</h5>
+                <canvas id="adminEnrollmentChart" height="250"></canvas>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card border-0 rounded-4 p-4 shadow-sm h-100 bg-white">
+                <h5 class="font-title mb-3">School Ratio</h5>
+                <canvas id="adminRatioChart" height="250"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- Notices Widget -->
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="font-title mb-0">Recent Notices</h5>
+                  <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="switchPortalView('admin-notices')">View All</button>
+                </div>
+                <div class="list-group list-group-flush" id="admin-recent-notices">
+                  <!-- Dynamic notice items -->
+                </div>
+              </div>
+            </div>
+            <!-- Admissions Enquiries Widget -->
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm h-100 bg-white">
+                <h5 class="font-title mb-3">Recent Admissions Enquiries</h5>
+                <div class="table-responsive">
+                  <table class="table portal-table">
+                    <thead><tr><th>Child Name</th><th>Class</th><th>Phone</th><th>Status</th></tr></thead>
+                    <tbody id="admin-recent-enquiries">
+                      <!-- Dynamic enquiries -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Manage Teachers Panel -->
+        <section class="portal-view" id="view-admin-teachers">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="font-title mb-0">School Teachers Registry</h4>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#teacherModal" onclick="window.AdminPortal.resetTeacherForm()">
+              <i class="fas fa-plus me-1"></i> Add Teacher
+            </button>
+          </div>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0"><i class="fas fa-search"></i></span>
+                  <input type="text" class="form-control bg-light border-0" id="searchTeacherInput" placeholder="Search by name, email or phone...">
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table portal-table">
+                <thead><tr><th>Photo</th><th>Name</th><th>Email</th><th>Phone</th><th>Qualification</th><th>Classes</th><th>Actions</th></tr></thead>
+                <tbody id="admin-teachers-table-body">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Manage Students Panel -->
+        <section class="portal-view" id="view-admin-students">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="font-title mb-0">School Students Registry</h4>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="window.AdminPortal.resetStudentForm()">
+              <i class="fas fa-plus me-1"></i> Add Student
+            </button>
+          </div>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0"><i class="fas fa-search"></i></span>
+                  <input type="text" class="form-control bg-light border-0" id="searchStudentInput" placeholder="Search by name or roll number...">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <select class="form-select bg-light border-0" id="filterStudentClass">
+                  <option value="">All Classes</option>
+                  <!-- Options generated dynamically -->
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table portal-table">
+                <thead><tr><th>Photo</th><th>Roll No</th><th>Name</th><th>Class & Sec</th><th>Parent Name</th><th>Emergency Contact</th><th>Actions</th></tr></thead>
+                <tbody id="admin-students-table-body">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Manage Classes & Subjects Panel -->
+        <section class="portal-view" id="view-admin-classes">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+                <h4 class="font-title mb-3">Setup Classes & Sections</h4>
+                <form id="addClassForm" class="mb-4">
+                  <div class="row g-3">
+                    <div class="col-sm-6">
+                      <select class="form-select" id="addClassName" required>
+                        <option value="" disabled selected>Select class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="Class 1">Class 1</option>
+                        <option value="Class 2">Class 2</option>
+                        <option value="Class 3">Class 3</option>
+                        <option value="Class 4">Class 4</option>
+                        <option value="Class 5">Class 5</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="addClassSection" placeholder="e.g. A, B" required>
+                    </div>
+                    <div class="col-sm-2">
+                      <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i></button>
+                    </div>
+                  </div>
+                </form>
+                <div class="table-responsive">
+                  <table class="table portal-table">
+                    <thead><tr><th>Class Name</th><th>Available Sections</th></tr></thead>
+                    <tbody id="admin-classes-table-body">
+                      <!-- Dynamic rows -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+                <h4 class="font-title mb-3">School Subjects</h4>
+                <div class="list-group list-group-flush" id="admin-subjects-list">
+                  <!-- Dynamic subject nodes -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Notice Board Panel -->
+        <section class="portal-view" id="view-admin-notices">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="font-title mb-0">System Notice Board</h4>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#noticeModal">
+              <i class="fas fa-plus me-1"></i> Add Notice
+            </button>
+          </div>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+            <div class="table-responsive">
+              <table class="table portal-table">
+                <thead><tr><th>Date</th><th>Title</th><th>Audience Target</th><th>Author</th><th>Actions</th></tr></thead>
+                <tbody id="admin-notices-table-body">
+                  <!-- Dynamic notices -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin Settings Panel -->
+        <section class="portal-view" id="view-admin-settings">
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white max-width-800 mx-auto">
+            <h4 class="font-title mb-4">Manage School Information</h4>
+            <form id="adminSettingsForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label font-title text-muted small">School Name</label>
+                  <input type="text" class="form-control" id="settingsSchoolName" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label font-title text-muted small">School Motto</label>
+                  <input type="text" class="form-control" id="settingsMotto" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label font-title text-muted small">Contact Email</label>
+                  <input type="email" class="form-control" id="settingsEmail" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label font-title text-muted small">Contact Phone</label>
+                  <input type="text" class="form-control" id="settingsPhone" required>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label font-title text-muted small">Correspondent Name</label>
+                  <input type="text" class="form-control" id="settingsCorrName" required>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label font-title text-muted small">Principal Name</label>
+                  <input type="text" class="form-control" id="settingsPrinName" required>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label font-title text-muted small">School Address</label>
+                  <textarea class="form-control" id="settingsAddress" style="height: 80px;" required></textarea>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label font-title text-muted small">School Logo Image URL</label>
+                  <input type="text" class="form-control" id="settingsLogoUrl">
+                </div>
+                <div class="col-md-12 mt-3">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="settingsAdmissionOpen">
+                    <label class="form-check-label font-title" for="settingsAdmissionOpen">Admission Registration Portal Active</label>
+                  </div>
+                </div>
+                <div class="col-12 mt-4 text-end">
+                  <button type="submit" class="btn btn-primary px-5 rounded-pill">Save Settings</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Admin Backups & Reports Panel -->
+        <section class="portal-view" id="view-admin-reports">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
+                <div class="icon-box bg-success text-white mb-3" style="width:60px; height:60px;"><i class="fas fa-file-excel"></i></div>
+                <h4 class="font-title">Generate Excel / CSV Reports</h4>
+                <p class="text-muted">Export complete lists of registered students, teachers, and exam marks records.</p>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-success" onclick="window.AdminPortal.exportCSV('students')">Download Students CSV</button>
+                  <button class="btn btn-outline-success" onclick="window.AdminPortal.exportCSV('teachers')">Download Teachers CSV</button>
+                  <button class="btn btn-outline-success" onclick="window.AdminPortal.exportCSV('marks')">Download Marks CSV</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
+                <div class="icon-box bg-primary text-white mb-3" style="width:60px; height:60px;"><i class="fas fa-cloud-download-alt"></i></div>
+                <h4 class="font-title">Database System Backup</h4>
+                <p class="text-muted">Generate and download a complete JSON snapshot representing all collection records in the database.</p>
+                <button class="btn btn-primary w-100 py-3 rounded-pill" onclick="window.AdminPortal.triggerBackupDownload()"><i class="fas fa-download me-2"></i>Export Backup JSON</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================
+             TEACHER PORTAL VIEWS
+             ===================================== -->
+        
+        <!-- Teacher Dashboard Panel -->
+        <section class="portal-view" id="view-teacher-dashboard">
+          <div class="row g-4 mb-4">
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>My Assigned Classes</h6><h3 id="teacher-stat-classes">0</h3></div>
+                <div class="widget-icon blue"><i class="fas fa-school"></i></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Total Students Guided</h6><h3 id="teacher-stat-students">0</h3></div>
+                <div class="widget-icon green"><i class="fas fa-user-graduate"></i></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Homework Assigned</h6><h3 id="teacher-stat-homework">0</h3></div>
+                <div class="widget-icon orange"><i class="fas fa-tasks"></i></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row g-4">
+            <!-- Notices Widget -->
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+                <h5 class="font-title mb-3">Notice Board Announcements</h5>
+                <div class="list-group list-group-flush" id="teacher-notices-feed">
+                  <!-- Dynamic teacher notices -->
+                </div>
+              </div>
+            </div>
+            <!-- Shortcut guides -->
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white h-100">
+                <h5 class="font-title mb-3">Teacher Quick Actions</h5>
+                <div class="row g-3">
+                  <div class="col-6"><button class="btn btn-outline-primary w-100 py-3 rounded-4" onclick="switchPortalView('teacher-attendance')"><i class="fas fa-calendar-check d-block fs-3 mb-2"></i>Mark Attendance</button></div>
+                  <div class="col-6"><button class="btn btn-outline-success w-100 py-3 rounded-4" onclick="switchPortalView('teacher-homework')"><i class="fas fa-plus d-block fs-3 mb-2"></i>Create Homework</button></div>
+                  <div class="col-6"><button class="btn btn-outline-warning w-100 py-3 rounded-4" onclick="switchPortalView('teacher-marks')"><i class="fas fa-file-invoice d-block fs-3 mb-2"></i>Grade Marks</button></div>
+                  <div class="col-6"><button class="btn btn-outline-purple w-100 py-3 rounded-4" onclick="switchPortalView('teacher-calendar')"><i class="fas fa-calendar-alt d-block fs-3 mb-2"></i>My Calendar</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Teacher Daily Attendance Panel -->
+        <section class="portal-view" id="view-teacher-attendance">
+          <h4 class="font-title mb-4">Daily Attendance Registry</h4>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-3">
+                <label class="form-label text-muted small">Select Class</label>
+                <select class="form-select" id="attClassSelector">
+                  <!-- Dynamic options -->
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-muted small">Select Section</label>
+                <select class="form-select" id="attSectionSelector">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-muted small">Select Date</label>
+                <input type="date" class="form-control" id="attDateSelector">
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-primary w-100 rounded-pill px-4 py-2" id="btn-load-attendance-grid">
+                  <i class="fas fa-sync me-1"></i> Retrieve Students
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendance student checklist -->
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white d-none" id="attendance-list-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="font-title mb-0" id="attendance-grid-title">Mark Checklist</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="window.TeacherPortal.bulkMarkAttendance('present')">All Present</button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="window.TeacherPortal.bulkMarkAttendance('absent')">All Absent</button>
+              </div>
+            </div>
+            <div class="attendance-grid mb-4" id="attendance-student-checklist">
+              <!-- Dynamic rows -->
+            </div>
+            <div class="text-end">
+              <button class="btn btn-success px-5 rounded-pill py-3 font-title" id="btn-save-attendance"><i class="fas fa-save me-2"></i>Save Attendance Log</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Teacher Homework Manager Panel -->
+        <section class="portal-view" id="view-teacher-homework">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="font-title mb-0">Assigned Homework Assignments</h4>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#homeworkModal">
+              <i class="fas fa-plus me-1"></i> Create Homework
+            </button>
+          </div>
+          <div class="row g-4" id="teacher-homework-list">
+            <!-- Dynamic homework cards -->
+          </div>
+        </section>
+
+        <!-- Teacher Grades Entry Panel -->
+        <section class="portal-view" id="view-teacher-marks">
+          <h4 class="font-title mb-4">Student Marks Compilation</h4>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label text-muted small">Select Class</label>
+                <select class="form-select" id="gradeClassSelector">
+                  <!-- Dynamic classes -->
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-muted small">Select Section</label>
+                <select class="form-select" id="gradeSectionSelector">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+              <div class="col-md-5">
+                <button class="btn btn-primary w-100 rounded-pill py-2" id="btn-load-marks-grid">
+                  <i class="fas fa-search me-1"></i> Retrieve Academic List
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white d-none" id="marks-list-card">
+            <h5 class="font-title mb-3">Student Ledger</h5>
+            <div class="table-responsive">
+              <table class="table portal-table">
+                <thead><tr><th>Roll No</th><th>Student Name</th><th>Total Marks</th><th>Average</th><th>Grade</th><th>Actions</th></tr></thead>
+                <tbody id="teacher-marks-table-body">
+                  <!-- Dynamic list of students with input actions -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Teacher Calendar Event Panel -->
+        <section class="portal-view" id="view-teacher-calendar">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="font-title mb-0">Calendar Planner</h4>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#eventModal">
+              <i class="fas fa-plus me-1"></i> Add Calendar Marker
+            </button>
+          </div>
+          <div id="teacherCalendar"></div>
+        </section>
+
+        <!-- Teacher Profile view -->
+        <section class="portal-view" id="view-teacher-profile">
+          <div class="row g-4 justify-content-center">
+            <div class="col-md-6">
+              <div class="profile-card">
+                <div class="profile-avatar-container">
+                  <img src="" class="profile-avatar" id="teacher-profile-avatar" alt="Avatar">
+                  <span class="profile-badge"><i class="fas fa-camera"></i></span>
+                </div>
+                <h3 class="font-title mb-1" id="teacher-profile-name">Sarah Jenkins</h3>
+                <span class="text-primary fw-bold small text-uppercase mb-4" id="teacher-profile-role">Primary Section Head</span>
+                
+                <div class="w-100 mt-2 border-top pt-3 text-muted small">
+                  <div class="d-flex justify-content-between mb-2"><strong>Email Address:</strong> <span id="teacher-profile-email">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Mobile Phone:</strong> <span id="teacher-profile-phone">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Qualifications:</strong> <span id="teacher-profile-qualification">---</span></div>
+                  <div class="d-flex justify-content-between"><strong>Teaching Experience:</strong> <span id="teacher-profile-exp">---</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================
+             STUDENT PORTAL VIEWS
+             ===================================== -->
+        
+        <!-- Student Dashboard Panel -->
+        <section class="portal-view" id="view-student-dashboard">
+          <div class="row g-4 mb-4">
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Class Attendance</h6><h3 id="student-stat-attendance">0%</h3></div>
+                <div class="widget-icon green"><i class="fas fa-calendar-check"></i></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Pending Homework</h6><h3 id="student-stat-homework">0</h3></div>
+                <div class="widget-icon orange"><i class="fas fa-book-open"></i></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="widget-card">
+                <div class="widget-info"><h6>Class Grade Rank</h6><h3 id="student-stat-rank">N/A</h3></div>
+                <div class="widget-icon purple"><i class="fas fa-trophy"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
+                <h5 class="font-title mb-3">Notice Board Notifications</h5>
+                <div class="list-group list-group-flush" id="student-notices-feed">
+                  <!-- Dynamic notices for student -->
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white h-100">
+                <h5 class="font-title mb-3">Quick Navigation</h5>
+                <div class="row g-3">
+                  <div class="col-6"><button class="btn btn-outline-primary w-100 py-3 rounded-4" onclick="switchPortalView('student-homework')"><i class="fas fa-tasks d-block fs-3 mb-2"></i>My Homework</button></div>
+                  <div class="col-6"><button class="btn btn-outline-success w-100 py-3 rounded-4" onclick="switchPortalView('student-marks')"><i class="fas fa-graduation-cap d-block fs-3 mb-2"></i>View Grades</button></div>
+                  <div class="col-6"><button class="btn btn-outline-warning w-100 py-3 rounded-4" onclick="switchPortalView('student-attendance')"><i class="fas fa-calendar-alt d-block fs-3 mb-2"></i>My Attendance</button></div>
+                  <div class="col-6"><button class="btn btn-outline-purple w-100 py-3 rounded-4" onclick="switchPortalView('student-profile')"><i class="fas fa-user-circle d-block fs-3 mb-2"></i>My Profile</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Student Homework View Panel -->
+        <section class="portal-view" id="view-student-homework">
+          <h4 class="font-title mb-4">Assigned Class Tasks</h4>
+          <div class="row g-4" id="student-homework-list">
+            <!-- Dynamic homework cards with submission status -->
+          </div>
+        </section>
+
+        <!-- Student Attendance Tracker Panel -->
+        <section class="portal-view" id="view-student-attendance">
+          <h4 class="font-title mb-4">Personal Attendance History</h4>
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white h-100">
+                <h5 class="font-title mb-3">Visual Monthly Overview</h5>
+                <div id="studentAttendanceCalendar"></div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card border-0 rounded-4 p-4 shadow-sm bg-white h-100 text-center">
+                <h5 class="font-title mb-4">Attendance Share</h5>
+                <canvas id="studentAttendancePie" height="220"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Student Marks Ledger Panel -->
+        <section class="portal-view" id="view-student-marks">
+          <h4 class="font-title mb-4">Progress Report Cards</h4>
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label text-muted small">Select Exam Term</label>
+                <select class="form-select" id="examTermSelector" onchange="window.StudentPortal.loadExamMarks()">
+                  <option value="Quarterly">Quarterly Exams</option>
+                  <option value="Half-Yearly">Half-Yearly Exams</option>
+                  <option value="Annual">Annual Exams</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-outline-primary w-100" onclick="window.StudentPortal.downloadReportCardPDF()"><i class="fas fa-file-pdf me-1"></i> Download PDF Report</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 rounded-4 p-4 shadow-sm bg-white" id="student-report-card-card">
+            <!-- Dynamic compilation of report sheet -->
+          </div>
+        </section>
+
+        <!-- Student Event Calendar Panel -->
+        <section class="portal-view" id="view-student-calendar">
+          <h4 class="font-title mb-4">School Calendar Planner</h4>
+          <div id="studentCalendar"></div>
+        </section>
+
+        <!-- Student Profile Panel -->
+        <section class="portal-view" id="view-student-profile">
+          <div class="row g-4 justify-content-center">
+            <div class="col-md-6">
+              <div class="profile-card">
+                <img src="" class="profile-avatar mb-3" id="student-profile-avatar" alt="Avatar">
+                <h3 class="font-title mb-1" id="student-profile-name">Student Name</h3>
+                <span class="badge bg-light text-primary border px-3 py-2 rounded-pill font-title mb-4" id="student-profile-class">Class 1 - A</span>
+                
+                <div class="w-100 mt-2 border-top pt-3 text-muted small">
+                  <div class="d-flex justify-content-between mb-2"><strong>Roll Number:</strong> <span id="student-profile-roll">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Parent / Guardian Name:</strong> <span id="student-profile-parent">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Contact Phone:</strong> <span id="student-profile-phone">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Home Address:</strong> <span id="student-profile-address">---</span></div>
+                  <div class="d-flex justify-content-between mb-2"><strong>Blood Group:</strong> <span id="student-profile-blood">---</span></div>
+                  <div class="d-flex justify-content-between"><strong>Emergency Contact:</strong> <span id="student-profile-emergency">---</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =====================================
+       MODALS SYSTEM
+       ===================================== -->
+  
+  <!-- Add/Edit Teacher Modal -->
+  <div class="modal fade" id="teacherModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title" id="teacherModalLabel">Teacher Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="teacherForm">
+          <input type="hidden" id="teacherFormId">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label small font-title">Teacher Full Name</label>
+              <input type="text" class="form-control" id="teacherFormName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Email Address</label>
+              <input type="email" class="form-control" id="teacherFormEmail" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Contact Phone</label>
+              <input type="tel" class="form-control" id="teacherFormPhone" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Qualifications</label>
+              <input type="text" class="form-control" id="teacherFormQual" placeholder="e.g. B.Ed, M.Sc" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Teaching Experience</label>
+              <input type="text" class="form-control" id="teacherFormExp" placeholder="e.g. 5 Years" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Class Assignments</label>
+              <div id="teacherClassCheckboxes" class="border rounded-3 p-3 max-vh-30 overflow-auto bg-light">
+                <!-- Checkboxes populated dynamically -->
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Teacher Profile Image URL</label>
+              <input type="text" class="form-control" id="teacherFormPhoto">
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Save Teacher</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Student Modal -->
+  <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title" id="studentModalLabel">Student Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="studentForm">
+          <input type="hidden" id="studentFormId">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label small font-title">Student Name</label>
+              <input type="text" class="form-control" id="studentFormName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Roll Number</label>
+              <input type="text" class="form-control" id="studentFormRoll" required>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Class Assignment</label>
+                <select class="form-select" id="studentFormClass" required>
+                  <!-- Options dynamic -->
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Section Assignment</label>
+                <select class="form-select" id="studentFormSection" required>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Parent / Guardian Name</label>
+              <input type="text" class="form-control" id="studentFormParent" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Contact Phone</label>
+              <input type="tel" class="form-control" id="studentFormPhone" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Home Address</label>
+              <textarea class="form-control" id="studentFormAddress" style="height:60px;" required></textarea>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Blood Group</label>
+                <input type="text" class="form-control" id="studentFormBlood" placeholder="e.g. O+">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Emergency Contact Details</label>
+                <input type="text" class="form-control" id="studentFormEmergency" placeholder="Name & Phone">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Student Photo URL</label>
+              <input type="text" class="form-control" id="studentFormPhoto">
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Save Student</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Homework Modal -->
+  <div class="modal fade" id="homeworkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title">Create Class Homework</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="homeworkForm">
+          <div class="modal-body py-4">
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Target Class</label>
+                <select class="form-select" id="hwFormClass" required>
+                  <!-- Dynamic -->
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Target Section</label>
+                <select class="form-select" id="hwFormSection" required>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Target Subject</label>
+              <select class="form-select" id="hwFormSubject" required>
+                <!-- Dynamic -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Homework Title</label>
+              <input type="text" class="form-control" id="hwFormTitle" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Homework Description</label>
+              <textarea class="form-control" id="hwFormDesc" style="height: 100px;" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Due Date</label>
+              <input type="date" class="form-control" id="hwFormDueDate" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Publish Homework</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Grades Modal -->
+  <div class="modal fade" id="gradesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title">Record Examination Grades</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="marksForm">
+          <input type="hidden" id="marksStudentId">
+          <input type="hidden" id="marksStudentName">
+          <div class="modal-body py-4">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label small font-title">Student Name</label>
+                <input type="text" class="form-control bg-light" id="marksLabelStudentName" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small font-title">Examination Term</label>
+                <select class="form-select" id="marksExamType" required>
+                  <option value="Quarterly">Quarterly Exams</option>
+                  <option value="Half-Yearly">Half-Yearly Exams</option>
+                  <option value="Annual">Annual Exams</option>
+                </select>
+              </div>
+            </div>
+            
+            <h6 class="border-bottom pb-2 mb-3 font-title text-primary"><i class="fas fa-percentage me-1"></i> Subject Marks Entry (Max: 100)</h6>
+            <div class="row g-3" id="marks-subjects-inputs">
+              <!-- Will be dynamically populated with fields for each subject -->
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Commit Report Card</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Calendar Event Modal -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title">Create Calendar Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="eventForm">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label small font-title">Event Title</label>
+              <input type="text" class="form-control" id="evtTitle" required>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <label class="form-label small font-title">Start Date</label>
+                <input type="date" class="form-control" id="evtStart" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small font-title">End Date</label>
+                <input type="date" class="form-control" id="evtEnd">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Event Category</label>
+              <select class="form-select" id="evtType" required>
+                <option value="holiday">Holiday</option>
+                <option value="exam">Exam</option>
+                <option value="meeting">Meeting</option>
+                <option value="sports">Sports</option>
+                <option value="reminder">Reminder</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Event Details</label>
+              <textarea class="form-control" id="evtDesc" style="height: 60px;"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Publish Marker</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Notice Modal -->
+  <div class="modal fade" id="noticeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 bg-light rounded-top-4">
+          <h5 class="modal-title font-title">Post System Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="noticeForm">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label small font-title">Notice Title</label>
+              <input type="text" class="form-control" id="noticeTitle" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Notice Details</label>
+              <textarea class="form-control" id="noticeContent" style="height: 120px;" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small font-title">Target Audience</label>
+              <select class="form-select" id="noticeTarget" required>
+                <option value="all">Public (All)</option>
+                <option value="teachers">Teachers Only</option>
+                <option value="students">Students / Parents Only</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Publish Notice</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+  <!-- jsPDF & html2canvas for PDF compilations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Firebase Compatibility CDN Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <!-- Application Portal Core Logics -->
+  <script src="assets/js/firebase-db.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+  <script src="assets/js/teacher.js"></script>
+  <script src="assets/js/student.js"></script>
+
+  <!-- Portal Initialization Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get URL params to deduce expected portal
+      const urlParams = new URLSearchParams(window.location.search);
+      const expectedPortal = urlParams.get('portal');
+
+      if (!expectedPortal || !['admin', 'teacher', 'student'].includes(expectedPortal)) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Route guard check
+      const sessionUser = window.Auth.checkAuthAndRedirect(expectedPortal);
+      if (!sessionUser) return; // Guard will redirect
+
+      // Apply initial header values
+      document.getElementById('sidebar-user-name').textContent = sessionUser.name;
+      document.getElementById('sidebar-user-role').textContent = sessionUser.role;
+      
+      const defaultPhotos = {
+        admin: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop',
+        teacher: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop',
+        student: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?w=80&h=80&fit=crop'
+      };
+      
+      document.getElementById('sidebar-user-avatar').src = defaultPhotos[sessionUser.role];
+
+      // Setup dynamic database mode visual flag
+      const dbIndicator = document.getElementById('database-mode-indicator');
+      if (window.isFirebaseActive) {
+        dbIndicator.className = 'badge bg-success text-white px-3 py-2 rounded-pill font-title';
+        dbIndicator.innerHTML = '<i class="fas fa-wifi me-1"></i> Firebase Active';
+      } else {
+        dbIndicator.className = 'badge bg-warning text-dark px-3 py-2 rounded-pill font-title';
+        dbIndicator.innerHTML = '<i class="fas fa-database me-1"></i> Demo Mode';
+      }
+
+      // Track clock
+      setInterval(() => {
+        const d = new Date();
+        document.getElementById('current-system-time').textContent = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      }, 1000);
+
+      // Initialize the correct view portal logic
+      if (sessionUser.role === 'admin' && window.AdminPortal) {
+        window.AdminPortal.init(sessionUser);
+      } else if (sessionUser.role === 'teacher' && window.TeacherPortal) {
+        window.TeacherPortal.init(sessionUser);
+      } else if (sessionUser.role === 'student' && window.StudentPortal) {
+        window.StudentPortal.init(sessionUser);
+      }
+    });
+  </script>
+</body>
+</html>

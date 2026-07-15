@@ -1,0 +1,14 @@
+{
+  "name": "nursery-primary-school-management-system",
+  "version": "1.0.0",
+  "description": "Premium Nursery & Primary School Management System with Firebase and client-side demo fallback.",
+  "main": "api/backup.js",
+  "scripts": {
+    "start": "npx -y serve",
+    "dev": "npx -y serve"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
+}

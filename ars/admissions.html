@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Arvind Nursery & Primary School | Admissions</title>
+  <meta name="description" content="Apply for admissions online. Read guidelines, age rules, and complete the registration enquiry form.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg fixed-top scrolled">
+    <div class="container">
+      <a class="navbar-brand" href="/index.html">
+        <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=80&h=80&fit=crop" alt="Sri Arvind Logo">
+        <span>Sri Arvind School</span>
+      </a>
+      <button class="navbar-toggler text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/admissions.html">Admissions</a></li>
+          <li class="nav-item"><a class="nav-link" href="/gallery.html">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact.html">Contact</a></li>
+          <li class="nav-item ms-lg-3"><a class="btn-portal" href="/login.html"><i class="fas fa-user-graduate me-2"></i>Portal Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Banner -->
+  <div class="bg-gradient-accent text-white py-5 mt-5">
+    <div class="container py-4 text-center">
+      <h1 class="display-4 font-title fw-bold" data-aos="fade-down">Admissions Open</h1>
+      <p class="lead" data-aos="fade-up" data-aos-delay="100">Join Sri Arvind Family for academic year 2026-2027</p>
+    </div>
+  </div>
+
+  <!-- Admission guidelines & form -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-5">
+        <!-- Guidelines -->
+        <div class="col-lg-6" data-aos="fade-right">
+          <h2 class="font-title mb-4">Admission Guidelines</h2>
+          <p class="text-muted">We welcome applications from students of all backgrounds who demonstrate a readiness to engage with our play-focused and primary curriculum.</p>
+          
+          <div class="card border-0 bg-light rounded-4 p-4 mb-4">
+            <h4 class="font-title text-primary"><i class="fas fa-calendar-alt me-2"></i>Age Requirements</h4>
+            <ul class="list-unstyled mt-3 text-muted">
+              <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>Nursery:</strong> 2.5 to 3.5 years by June 1st</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>LKG:</strong> 3.5 to 4.5 years by June 1st</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>UKG:</strong> 4.5 to 5.5 years by June 1st</li>
+              <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i><strong>Class 1:</strong> 5.5+ years by June 1st</li>
+            </ul>
+          </div>
+
+          <div class="card border-0 bg-light rounded-4 p-4">
+            <h4 class="font-title text-primary"><i class="fas fa-file-invoice me-2"></i>Required Documents</h4>
+            <ol class="mt-3 text-muted">
+              <li class="mb-2">Photocopy of Birth Certificate</li>
+              <li class="mb-2">Passport size photographs (Child - 4, Parents - 2)</li>
+              <li class="mb-2">Immunization & Vaccination Records</li>
+              <li class="mb-2">Proof of Address (Aadhaar, Utility Bill)</li>
+              <li class="mb-2">Previous school's transfer certificate (Class 1-5)</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="glass-panel p-4">
+            <h3 class="font-title mb-3">Admission Enquiry Form</h3>
+            <p class="text-muted small mb-4">Please submit the enquiry below and our administrative officer will contact you within 24 hours to schedule an interaction session.</p>
+            
+            <form id="admissionForm">
+              <div class="row g-3">
+                <div class="col-md-12">
+                  <div class="form-floating">
+                    <input type="text" class="form-control" id="childName" placeholder="Child's Name" required>
+                    <label for="childName">Child's Full Name</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="date" class="form-control" id="childDob" required>
+                    <label for="childDob">Date of Birth</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <select class="form-select" id="admissionClass" required>
+                      <option value="" disabled selected>Select class</option>
+                      <option value="Nursery">Nursery</option>
+                      <option value="LKG">LKG</option>
+                      <option value="UKG">UKG</option>
+                      <option value="Class 1">Class 1</option>
+                      <option value="Class 2">Class 2</option>
+                      <option value="Class 3">Class 3</option>
+                      <option value="Class 4">Class 4</option>
+                      <option value="Class 5">Class 5</option>
+                    </select>
+                    <label for="admissionClass">Class Applied For</label>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-floating">
+                    <input type="text" class="form-control" id="parentName" placeholder="Parent's Name" required>
+                    <label for="parentName">Parent / Guardian Name</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="email" class="form-control" id="parentEmail" placeholder="Email" required>
+                    <label for="parentEmail">Email Address</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="tel" class="form-control" id="parentPhone" placeholder="Phone" required>
+                    <label for="parentPhone">Phone Number</label>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-floating">
+                    <textarea class="form-control" id="enquiryMessage" placeholder="Message" style="height: 100px;"></textarea>
+                    <label for="enquiryMessage">Additional Comments / Queries</label>
+                  </div>
+                </div>
+                <div class="col-12 mt-4">
+                  <button type="submit" class="btn btn-portal w-100 py-3"><i class="fas fa-paper-plane me-2"></i>Submit Enquiry</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4">
+          <div class="footer-brand">
+            <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=80&h=80&fit=crop" alt="Logo">
+            <span>Sri Arvind School</span>
+          </div>
+          <p class="mb-4">Shaping character, intelligence, and moral foundations since 2012. Our classrooms inspire child innovation and values.</p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/about.html">About Us</a></li>
+            <li><a href="/admissions.html">Admissions</a></li>
+            <li><a href="/gallery.html">Gallery</a></li>
+            <li><a href="/contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-4">
+          <h4>Portals</h4>
+          <ul class="footer-links">
+            <li><a href="/login.html?portal=admin">Admin Dashboard</a></li>
+            <li><a href="/login.html?portal=teacher">Teacher Dashboard</a></li>
+            <li><a href="/login.html?portal=student">Student Dashboard</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-4">
+          <h4>Contact Info</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-map-marker-alt me-2 text-primary"></i> <span id="footer-address">5/758 New Housing Unit, Thuraiyur</span></li>
+            <li><i class="fas fa-phone me-2 text-primary"></i> <span id="footer-phone">+1 (555) 019-2834</span></li>
+            <li><i class="fas fa-envelope me-2 text-primary"></i> <span id="footer-email">info@stmaryschool.edu</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 Sri Arvind School. All rights reserved.</p>
+        <p class="mb-0">Powered by Class-Logic and Firebase</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="assets/js/firebase-db.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+
+    // Handle Admission Enquiry submit
+    document.getElementById('admissionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const enquiry = {
+        childName: document.getElementById('childName').value,
+        dob: document.getElementById('childDob').value,
+        class: document.getElementById('admissionClass').value,
+        parentName: document.getElementById('parentName').value,
+        email: document.getElementById('parentEmail').value,
+        phone: document.getElementById('parentPhone').value,
+        message: document.getElementById('enquiryMessage').value,
+        status: 'pending'
+      };
+
+      try {
+        showLoader(true);
+        await window.SchoolDB.submitEnquiry(enquiry);
+        showLoader(false);
+        showToast("Enquiry submitted successfully! We will get in touch shortly.", "success");
+        document.getElementById('admissionForm').reset();
+      } catch (err) {
+        showLoader(false);
+        showToast("Failed to submit enquiry. Try again later.", "error");
+      }
+    });
+  </script>
+</body>
+</html>
